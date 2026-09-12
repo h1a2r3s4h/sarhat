@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, ArrowUpRight, Zap, CheckCircle2, ShieldCheck } from "lucide-react";
+import { MapPin, Activity, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import ScrollReveal from "./ScrollReveal";
 
@@ -14,269 +14,283 @@ interface StateInfo {
   highlightVertical: string;
   discom: string;
   description: string;
-  // Position percentage relative to map image box
   targetPos: { top: string; left: string };
+  deliverables: string[];
 }
 
 export default function FootprintMap() {
   const stateData: StateInfo[] = [
     {
-      name: "Uttar Pradesh",
-      code: "UP",
+      name: "Uttar Pradesh (Central)",
+      code: "UP-CTL",
       mwInstalled: "18.5 MW",
       activeProjects: 8,
-      highlightVertical: "Solar EPC & Substation 132kV",
+      highlightVertical: "Solar EPC & 132kV Substation",
       discom: "UPPCL / UPNEDA",
-      description: "A core operating footprint for renewable energy, utility solar and infrastructure execution.",
-      targetPos: { top: "36%", left: "53%" },
+      description: "Core operating footprint for utility solar EPC and DISCOM substations.",
+      targetPos: { top: "37%", left: "47%" },
+      deliverables: ["132kV Substation Bay", "Solar Park Stringing", "UPNEDA Clearances"],
     },
     {
-      name: "Rajasthan",
+      name: "Uttar Pradesh (North)",
+      code: "UP-NTH",
+      mwInstalled: "14.2 MW",
+      activeProjects: 5,
+      highlightVertical: "Grid Evacuation Substation",
+      discom: "UPPCL Corridors",
+      description: "High-voltage transmission corridor and grid integration hub.",
+      targetPos: { top: "32%", left: "44%" },
+      deliverables: ["High Voltage Bay", "Feeder Interconnect", "DISCOM Approval"],
+    },
+    {
+      name: "Rajasthan (Jaipur)",
       code: "RJ",
       mwInstalled: "16.0 MW",
       activeProjects: 6,
       highlightVertical: "Utility Solar & BESS Storage",
       discom: "RRECL / JVVNL",
-      description: "High-irradiance solar parks and utility-scale battery energy storage system (BESS) integration.",
-      targetPos: { top: "36%", left: "34%" },
+      description: "High-irradiance solar parks and containerized BESS storage arrays.",
+      targetPos: { top: "37%", left: "26%" },
+      deliverables: ["High-Irradiance Arrays", "Containerized BESS", "Open Access PPA"],
     },
     {
-      name: "Madhya Pradesh",
+      name: "Madhya Pradesh (Bhopal)",
       code: "MP",
       mwInstalled: "12.4 MW",
       activeProjects: 5,
       highlightVertical: "Agrivoltaics & Grid Evacuation",
       discom: "MPMKVVCL / MPPMCL",
-      description: "Central India utility solar installations and high-voltage transmission substation corridors.",
-      targetPos: { top: "49%", left: "44%" },
+      description: "Central India utility solar installations and substation corridors.",
+      targetPos: { top: "52%", left: "37%" },
+      deliverables: ["Substation Corridor", "PM-KUSUM Feeder", "Ground Mount Solar"],
     },
     {
-      name: "Haryana",
-      code: "HR",
-      mwInstalled: "6.2 MW",
-      activeProjects: 4,
-      highlightVertical: "C&I Rooftop & Agrivoltaics",
-      discom: "DHBVN / UHBVN",
-      description: "Industrial C&I solar rooftops and PM-KUSUM Component A agrivoltaics power plants.",
-      targetPos: { top: "28%", left: "41%" },
-    },
-    {
-      name: "Himachal Pradesh",
-      code: "HP",
-      mwInstalled: "2.8 MW",
-      activeProjects: 2,
-      highlightVertical: "Mountainous Terrain Substation & Solar",
-      discom: "HPSEBL / HIMURJA",
-      description: "Specialized cold-climate civil engineering and high-altitude power evacuation.",
-      targetPos: { top: "22%", left: "44%" },
-    },
-    {
-      name: "Bihar",
-      code: "BR",
-      mwInstalled: "3.5 MW",
+      name: "Bihar / Sikkim Corridor",
+      code: "BR-SKM",
+      mwInstalled: "8.5 MW",
       activeProjects: 4,
       highlightVertical: "PM-KUSUM & Civil Infrastructure",
       discom: "NBPDCL / BREDA",
-      description: "Rural electrification, PM-KUSUM feeder solarization, and access roads.",
-      targetPos: { top: "41%", left: "65%" },
+      description: "Feeder solarization and mountain access civil engineering.",
+      targetPos: { top: "36%", left: "67%" },
+      deliverables: ["Feeder Solarization", "Access Infrastructure", "BREDA Approvals"],
+    },
+    {
+      name: "Arunachal / NE Grid",
+      code: "NE-GRID",
+      mwInstalled: "6.2 MW",
+      activeProjects: 3,
+      highlightVertical: "Frontier Solar & Substation",
+      discom: "APDCL / APEDA",
+      description: "Specialized terrain civil engineering and power evacuation.",
+      targetPos: { top: "30%", left: "84%" },
+      deliverables: ["Terrain MMS Foundations", "Substation Evacuation", "APEDA Clearances"],
     },
   ];
 
-  const [activeState, setActiveState] = useState<StateInfo>(stateData[0]);
+  // State hovered by mouse (null when mouse leaves)
+  const [hoveredState, setHoveredState] = useState<StateInfo | null>(null);
 
   return (
-    <section id="footprint" className="py-28 bg-black relative z-10 border-b border-white/10">
+    <section id="footprint" className="py-24 sm:py-28 bg-[#030908] relative z-10 border-b border-white/10 select-none overflow-hidden font-sans-ui">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
         {/* Section Header */}
         <ScrollReveal direction="up" distance={40}>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
-            <div>
-              <div className="text-xs font-semibold tracking-widest text-[#6DAD45] uppercase mb-3 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#6DAD45] animate-ping"></span>
-                06 / FOOTPRINT
-              </div>
-              <h2 className="text-4xl sm:text-5xl md:text-6xl font-serif-display font-medium text-white tracking-tight leading-tight">
-                Built across India. <br />
-                <span className="text-[#6DAD45]">Growing with purpose.</span>
-              </h2>
+          <div className="text-center max-w-3xl mx-auto mb-10">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-900/90 border border-white/15 text-[11px] font-bold text-[#5EE72D] uppercase tracking-widest mb-4 backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-[#5EE72D] animate-ping"></span>
+              05 / PAN-INDIA FOOTPRINT
             </div>
-            <p className="text-zinc-400 font-light text-base max-w-md leading-relaxed">
-              Our current operating footprint includes Uttar Pradesh, Rajasthan, Madhya Pradesh, Haryana, Himachal Pradesh, and Bihar.
+
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-serif-display font-medium tracking-tight text-white leading-tight mb-4">
+              Built across India. <br />
+              <span className="text-[#5EE72D] italic font-serif-display font-medium">Growing with purpose.</span>
+            </h2>
+
+            <p className="text-zinc-300 font-light text-base sm:text-lg leading-relaxed">
+              Explore our active solar, storage, and infrastructure projects across key state corridors. Hover any state location on the map to inspect project details.
             </p>
           </div>
         </ScrollReveal>
 
-        {/* 2-Column Layout: Sage Green Map Graphic + State Details Card */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Tactical Sage Green Cartographic Map Graphic */}
-          <div className="lg:col-span-7">
-            <ScrollReveal direction="left" distance={50}>
-              <div className="card-gradient rounded-3xl p-4 sm:p-6 border border-white/15 relative overflow-hidden shadow-2xl bg-[#141b14]">
-                {/* Header Tag */}
-                <div className="flex items-center justify-between mb-4 px-2 z-10">
-                  <span className="text-xs font-mono text-[#6DAD45] uppercase tracking-widest flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-[#6DAD45]" /> STATES AND UNION TERRITORIES MAP OF INDIA
-                  </span>
-                  <span className="text-xs font-mono text-zinc-400">
-                    PAN-INDIA EXECUTION
-                  </span>
-                </div>
+        {/* ------------------------------------------------------------- */}
+        {/* HIGH-RES VECTOR INDIA MAP CANVAS (CLEAN & ISOLATED) */}
+        {/* ------------------------------------------------------------- */}
+        <ScrollReveal direction="up" distance={45} delay={0.15}>
+          <div className="relative w-full max-w-3xl mx-auto flex flex-col items-center">
+            
+            {/* Map Header Status Indicator */}
+            <div className="w-full flex items-center justify-between mb-4 px-3">
+              <span className="text-[11px] font-mono text-[#5EE72D] uppercase tracking-widest flex items-center gap-2">
+                <MapPin className="w-3.5 h-3.5 text-[#5EE72D]" /> PAN-INDIA OPERATIONAL MAP
+              </span>
+              <span className="text-[10px] font-mono text-zinc-400 flex items-center gap-1.5">
+                <Activity className="w-3 h-3 text-[#5EE72D] animate-pulse" />
+                HOVER MARKER FOR DETAILS
+              </span>
+            </div>
 
-                {/* Map Image Canvas with Interactive Glowing Targets */}
-                <div className="relative w-full aspect-square max-h-[550px] rounded-2xl overflow-hidden border border-white/10 shadow-inner group">
-                  <Image
-                    src="/images/india-map-tactical.jpg"
-                    alt="States and Union Territories Map of India - SARHAT EPC"
-                    fill
-                    className="object-cover object-center filter contrast-105"
-                  />
+            {/* Main India Vector Map Canvas (Un-bordered Floating View) */}
+            <div className="relative w-full aspect-[3/3.8] max-h-[720px] flex items-center justify-center">
+              
+              {/* Isolated Vector Image of India */}
+              <div className="relative w-full h-full">
+                <Image
+                  src="/images/india-map-vector.jpg"
+                  alt="Interactive Vector Map of India - SARHAT EPC"
+                  fill
+                  priority
+                  className="object-contain object-center filter contrast-110 brightness-105"
+                />
 
-                  {/* Dark sage vignette overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a120a]/80 via-transparent to-[#0a120a]/40 pointer-events-none"></div>
+                {/* ------------------------------------------------------- */}
+                {/* 6 USER-SPECIFIED SMALL NEON GREEN DOT LOCATION MARKERS */}
+                {/* ------------------------------------------------------- */}
+                {stateData.map((st) => {
+                  const isHovered = hoveredState?.code === st.code;
+                  const topVal = parseInt(st.targetPos.top);
+                  const leftVal = parseInt(st.targetPos.left);
 
-                  {/* Glowing Target Rings over Map Coordinates */}
-                  {stateData.map((st) => {
-                    const isActive = activeState.code === st.code;
-                    return (
-                      <button
-                        key={st.code}
-                        onClick={() => setActiveState(st)}
-                        onMouseEnter={() => setActiveState(st)}
-                        style={{ top: st.targetPos.top, left: st.targetPos.left }}
-                        className="absolute -translate-x-1/2 -translate-y-1/2 group/target z-20 cursor-pointer focus:outline-none"
+                  const isTopHalf = topVal < 45;
+                  const isRightHalf = leftVal > 55;
+
+                  return (
+                    <div
+                      key={st.code}
+                      style={{ top: st.targetPos.top, left: st.targetPos.left }}
+                      className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all duration-300 ${
+                        isHovered ? "z-[100]" : "z-20"
+                      }`}
+                      onMouseEnter={() => setHoveredState(st)}
+                      onMouseLeave={() => setHoveredState(null)}
+                      onClick={() => setHoveredState(hoveredState?.code === st.code ? null : st)}
+                    >
+                      {/* Compact Outer Ripple Ring */}
+                      <span
+                        className={`absolute -inset-2 rounded-full transition-all duration-300 pointer-events-none ${
+                          isHovered
+                            ? "bg-[#5EE72D]/70 animate-ping border border-[#5EE72D]"
+                            : "bg-[#5EE72D]/30 group-hover:scale-125"
+                        }`}
+                      ></span>
+
+                      {/* Small Sleek Neon Green Location Dot Pointer */}
+                      <motion.button
+                        whileHover={{ scale: 1.4 }}
+                        whileTap={{ scale: 0.9 }}
+                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border-2 border-black flex items-center justify-center transition-all duration-300 shadow-[0_0_15px_#5EE72D] ${
+                          isHovered
+                            ? "bg-[#5EE72D] shadow-[0_0_25px_#5EE72D] scale-130"
+                            : "bg-[#5EE72D]"
+                        }`}
                       >
-                        {/* Outer Pulsing Green Ring */}
-                        <span
-                          className={`absolute -inset-3 rounded-full transition-all duration-300 ${
-                            isActive
-                              ? "bg-[#6DAD45]/40 animate-ping border border-[#6DAD45]"
-                              : "bg-[#6DAD45]/20 group-hover/target:scale-150"
-                          }`}
-                        ></span>
+                        <span className="w-1 h-1 rounded-full bg-black"></span>
+                      </motion.button>
 
-                        {/* Middle Glowing Target Circle */}
-                        <div
-                          className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
-                            isActive
-                              ? "border-[#6DAD45] bg-[#6DAD45]/30 shadow-[0_0_20px_#6DAD45] scale-125"
-                              : "border-[#6DAD45]/70 bg-black/60 group-hover/target:border-[#6DAD45]"
-                          }`}
-                        >
-                          <div
-                            className={`w-2.5 h-2.5 rounded-full transition-all ${
-                              isActive ? "bg-[#6DAD45] scale-125" : "bg-[#6DAD45]/80"
+                      {/* --------------------------------------------------- */}
+                      {/* HOVER TOOLTIP SPEECH BUBBLE WITH POINTER ARROW */}
+                      {/* --------------------------------------------------- */}
+                      <AnimatePresence>
+                        {isHovered && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.85, y: isTopHalf ? 8 : -8, filter: "blur(4px)" }}
+                            animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+                            exit={{ opacity: 0, scale: 0.85, y: isTopHalf ? 8 : -8, filter: "blur(4px)" }}
+                            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                            className={`absolute z-[110] w-60 sm:w-64 p-3.5 bg-black/95 border border-[#5EE72D] rounded-2xl backdrop-blur-2xl shadow-[0_15px_45px_rgba(0,0,0,0.95)] text-left pointer-events-auto ${
+                              isTopHalf ? "top-full mt-3" : "bottom-full mb-3"
+                            } ${
+                              isRightHalf ? "right-0 translate-x-3" : "left-1/2 -translate-x-1/2"
                             }`}
-                          ></div>
-                        </div>
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {/* Speech Bubble Arrow Pointer */}
+                            <div
+                              className={`absolute left-1/2 -translate-x-1/2 w-0 h-0 border-x-8 border-x-transparent ${
+                                isTopHalf
+                                  ? "bottom-full border-b-8 border-b-[#5EE72D]"
+                                  : "top-full border-t-8 border-t-[#5EE72D]"
+                              }`}
+                            ></div>
 
-                        {/* Floating Tooltip Label */}
-                        <div
-                          className={`absolute left-1/2 -translate-x-1/2 bottom-full mb-1 px-2.5 py-1 rounded-md text-[10px] font-mono font-bold uppercase whitespace-nowrap transition-all shadow-xl ${
-                            isActive
-                              ? "bg-[#6DAD45] text-black opacity-100 scale-100"
-                              : "bg-black/90 text-white opacity-0 group-hover/target:opacity-100 border border-white/20"
-                          }`}
-                        >
-                          {st.name}
-                        </div>
-                      </button>
-                    );
-                  })}
+                            {/* Header inside Tooltip */}
+                            <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-white/15">
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <span className="w-2 h-2 rounded-full bg-[#5EE72D] animate-pulse shrink-0"></span>
+                                <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider truncate">
+                                  {st.name} ({st.code})
+                                </h4>
+                              </div>
+                              <span className="px-2 py-0.5 bg-[#5EE72D] text-black text-[10px] font-mono font-extrabold rounded-md shadow-sm shrink-0">
+                                {st.mwInstalled}
+                              </span>
+                            </div>
 
-                  <div className="absolute bottom-3 left-3 px-3 py-1.5 rounded-lg bg-black/80 backdrop-blur-md border border-white/15 text-[10px] font-mono text-zinc-300">
-                    Target Icons: Active EPC Project Clusters
-                  </div>
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
+                            {/* Info Stats */}
+                            <div className="space-y-1 text-[11px] mb-2.5">
+                              <div className="flex justify-between items-center">
+                                <span className="text-zinc-400 font-mono">PROJECTS:</span>
+                                <span className="text-white font-mono font-bold">{st.activeProjects} Active Sites</span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-zinc-400 font-mono">DISCOM:</span>
+                                <span className="text-[#5EE72D] font-mono font-semibold">{st.discom}</span>
+                              </div>
+                            </div>
 
-          {/* Active State Detail Card (Reference Exact Layout) */}
-          <div className="lg:col-span-5 h-full flex flex-col justify-between">
-            <ScrollReveal direction="right" distance={50} delay={0.15}>
-              <motion.div
-                key={activeState.code}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3 }}
-                className="card-gradient border border-[#6DAD45]/50 rounded-3xl p-8 sm:p-10 relative overflow-hidden flex flex-col justify-between min-h-[480px] shadow-2xl backdrop-blur-xl"
-              >
-                <div className="absolute top-0 right-0 w-48 h-48 bg-[#6DAD45]/15 rounded-full blur-3xl pointer-events-none"></div>
+                            {/* Core Focus Vertical */}
+                            <p className="text-[10.5px] text-zinc-300 font-light leading-snug mb-2.5 pt-1.5 border-t border-white/10">
+                              <span className="text-[#5EE72D] font-medium">Core Focus: </span>
+                              {st.highlightVertical}
+                            </p>
 
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-mono text-[#6DAD45] uppercase tracking-widest flex items-center gap-1.5">
-                      <Zap className="w-3.5 h-3.5 text-[#6DAD45]" /> CURRENT OPERATING FOOTPRINT
-                    </span>
-                    <span className="px-3 py-1 bg-[#6DAD45]/20 text-[#6DAD45] font-mono text-xs font-bold rounded-full">
-                      {activeState.mwInstalled}
-                    </span>
-                  </div>
-
-                  <h3 className="text-4xl font-serif-display font-medium text-white mb-4">
-                    {activeState.name}
-                  </h3>
-
-                  <p className="text-sm text-zinc-300 font-light leading-relaxed mb-8">
-                    {activeState.description}
-                  </p>
-
-                  {/* State Tag Pills (RJ, UP, Haryana, etc.) */}
-                  <div className="mb-8 border-t border-b border-white/10 py-6">
-                    <div className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-3">
-                      FOOTPRINT REGION SELECTOR:
+                            {/* Key Deliverables Badges */}
+                            <div className="space-y-1 pt-1.5 border-t border-white/10">
+                              {st.deliverables.map((item) => (
+                                <div key={item} className="flex items-center gap-1.5 text-[9.5px] text-zinc-200 font-mono">
+                                  <CheckCircle2 className="w-3 h-3 text-[#5EE72D] shrink-0" />
+                                  <span className="truncate">{item}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      {stateData.map((st) => (
-                        <button
-                          key={st.code}
-                          onClick={() => setActiveState(st)}
-                          className={`px-3.5 py-1.5 rounded-full text-xs font-mono transition-all ${
-                            activeState.code === st.code
-                              ? "bg-[#6DAD45] text-black font-bold shadow-lg shadow-[#6DAD45]/30 scale-105"
-                              : "bg-black/60 text-zinc-400 border border-white/15 hover:text-white hover:border-[#6DAD45]/50"
-                          }`}
-                        >
-                          {st.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                  );
+                })}
 
-                  {/* Project Metrics Summary */}
-                  <div className="space-y-3 mb-8">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-zinc-400">ACTIVE PROJECT SITES:</span>
-                      <span className="text-white font-mono font-bold">
-                        {activeState.activeProjects} Operational Sites
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-zinc-400">CORE VERTICAL:</span>
-                      <span className="text-[#6DAD45] font-semibold">
-                        {activeState.highlightVertical}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-zinc-400">STATE UTILITY / DISCOM:</span>
-                      <span className="text-white font-mono">{activeState.discom}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Primary Action Button */}
-                <a
-                  href="#contact"
-                  className="w-full bg-[#6DAD45] hover:bg-[#5b9538] text-black font-bold text-xs uppercase tracking-widest py-4 rounded-full flex items-center justify-center gap-2 transition-all shadow-xl shadow-[#6DAD45]/30 group"
+                {/* ------------------------------------------------------- */}
+                {/* FLOATING STAT BADGE CIRCLE (MATCHING REFERENCE DESIGN) */}
+                {/* ------------------------------------------------------- */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4, duration: 0.5 }}
+                  className="absolute bottom-4 right-2 sm:bottom-8 sm:right-6 w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-white text-zinc-900 border-4 border-[#0891b2] shadow-[0_10px_35px_rgba(0,0,0,0.6)] flex flex-col items-center justify-center text-center p-2 z-30 pointer-events-none select-none"
                 >
-                  <span>Explore state projects →</span>
-                  <ArrowUpRight className="w-4 h-4 text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </a>
-              </motion.div>
-            </ScrollReveal>
+                  <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0891b2] font-mono leading-none">
+                    75+
+                  </span>
+                  <span className="text-sm sm:text-base font-extrabold tracking-tight text-zinc-800 font-mono leading-none mb-1">
+                    MW
+                  </span>
+                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-500 leading-tight">
+                    Clean Energy Evacuated
+                  </span>
+                </motion.div>
+
+              </div>
+
+            </div>
+
           </div>
-        </div>
+        </ScrollReveal>
+
       </div>
     </section>
   );
 }
+
+

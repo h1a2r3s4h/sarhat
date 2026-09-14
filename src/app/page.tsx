@@ -15,6 +15,7 @@ import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
 import QuoteModal from "@/components/QuoteModal";
 
+
 export default function Home() {
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
 
@@ -29,6 +30,8 @@ export default function Home() {
   return (
     <SmoothScroll>
       <main className="min-h-screen bg-black text-white selection:bg-[#6DAD45] selection:text-black relative">
+        {/* Interactive Fluid Canvas Gradient Background across Full Home Page */}
+
         {/* Navigation */}
         <Navbar onOpenQuote={handleOpenQuote} />
 
